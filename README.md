@@ -27,6 +27,8 @@ ADMIN_EMAIL=你要收通知的 email
 
 python app.py
 
+```
+
 ## 🌐 部署 Render
 
 使用 render.yaml 自動部署：
