@@ -3,6 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, TeacherProfile
 from config import Config
+app.config.from_object(Config)
 from flask_migrate import Migrate
 from functools import wraps
 from flask_mail import Mail, Message
@@ -483,8 +484,19 @@ def map_page():
 def disclaimer():
     return render_template('disclaimer.html')
 
-if os.environ.get("FLASK_ENV") == "development":
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+# 決定資料庫路徑：雲端在 /tmp，開發在 instance/
+if os.environ.get("RENDER"):  # Render 雲端部署會自動有這個環境變數
+    db_path = "/tmp/database.db"
+else:
+    db_path = os.path.join(os.path.dirname(__file__), "instance", "database.db")
 
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+
+# 初始化資料庫（Render 上第一次部署時用得到）
+with app.app_context():
+    db.create_all()
+
+# 只有本機才跑 Flask 的伺服器，Render 上用 gunicorn
+if __name__ == "__main__":
+    if os.environ.get("FLASK_ENV") == "development":
+        app.run(debug=True)
