@@ -4,20 +4,23 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-    # ✅ 資料庫設定（SQLite 檔案放在 instance/ 資料夾中）
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "instance", "database.db")
+    # 讀環境變數 DB_PATH，有就用它，沒就用本地預設路徑
+    db_path = os.environ.get("DB_PATH")
+    if db_path:
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{db_path}"
+    else:
+        SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "instance", "database.db")
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = os.environ.get("SECRET_KEY", "banana-secret-key")  # 建議部署時用 env 變數
 
-    # ✅ 安全性設定（用於 session、表單驗證等）
-    SECRET_KEY = os.environ.get("SECRET_KEY", "banana-default-secret")  # 建議在 .env 設定正式密鑰
-
-    # ✅ 郵件設定（供 Flask-Mail 用）
+    # 郵件設定（供 Flask-Mail 用）
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get("MAIL_USERNAME")        # 寄件者 Gmail 帳號
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME")        # 寄件 Gmail 帳號
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")        # Gmail 應用程式密碼
-    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_USERNAME")  # 預設寄件人
+    MAIL_DEFAULT_SENDER = MAIL_USERNAME                     # 預設寄件人，直接用上面變數即可
 
-    # ✅ 管理員信箱（可自定義接收通知的對象）
+    # 管理員信箱（接收通知用）
     ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@example.com")
