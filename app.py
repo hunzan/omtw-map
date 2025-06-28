@@ -3,41 +3,27 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, TeacherProfile
 from config import Config
-app.config.from_object(Config)
 from flask_migrate import Migrate
 from functools import wraps
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
-load_dotenv()
 import secrets
 import os
+
+# 先載入 .env 變數
+load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# 資料庫初始化
+# 初始化擴充功能
 db.init_app(app)
-
 migrate = Migrate(app, db)
-
-# 郵件初始化
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-
-# 從 .env 載入帳密與管理員信箱
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')  # ← 加這行才有寄件人
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config["MAIL_DEFAULT_SENDER"] = app.config['MAIL_USERNAME']
-app.config["ADMIN_EMAIL"] = os.getenv("ADMIN_EMAIL")
-
-# 初始化 Mail
 mail = Mail(app)
 
-# 登入管理初始化
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "login"  # 使用者未登入會導向 login 頁面
+login_manager.login_view = "login"
 
 def admin_required(f):
     @wraps(f)
@@ -498,5 +484,7 @@ with app.app_context():
 
 # 只有本機才跑 Flask 的伺服器，Render 上用 gunicorn
 if __name__ == "__main__":
-    if os.environ.get("FLASK_ENV") == "development":
-        app.run(debug=True)
+    with app.app_context():
+        db.create_all()  # 確保本地端啟動時也建立資料表
+    app.run(debug=True)
+

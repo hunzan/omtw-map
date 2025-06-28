@@ -1,20 +1,23 @@
 import os
 
+# 專案根目錄
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-    # 🧠 根據部署環境，動態決定資料庫位置
-    if os.environ.get("RENDER"):
-        SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/database.db"  # Render 的可寫目錄
-    else:
-        SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "instance", "database.db")
-
+    # ✅ 資料庫設定（SQLite 檔案放在 instance/ 資料夾中）
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "instance", "database.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.environ.get("SECRET_KEY", "banana-secret-key")  # 可從環境變數讀，否則給預設
 
-    # 📬 郵件設定
+    # ✅ 安全性設定（用於 session、表單驗證等）
+    SECRET_KEY = os.environ.get("SECRET_KEY", "banana-default-secret")  # 建議在 .env 設定正式密鑰
+
+    # ✅ 郵件設定（供 Flask-Mail 用）
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
-    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME")        # 寄件者 Gmail 帳號
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")        # Gmail 應用程式密碼
+    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_USERNAME")  # 預設寄件人
+
+    # ✅ 管理員信箱（可自定義接收通知的對象）
+    ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@example.com")
