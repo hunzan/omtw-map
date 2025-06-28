@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>設定一次性驗證碼｜管理後台</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .form-container {
+      max-width: 400px;
+      margin: 3rem auto;
+      padding: 2rem;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #FFF8D7;
+      text-align: center;
+    }
+    input[type="text"] {
+      padding: 0.5rem;
+      width: 80%;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    .btn {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>待處理重設密碼請求</h2>
+    <form method="POST">
+      <label>選擇使用者：</label>
+      <select name="user_id">
+        {% for u in users %}
+          <option value="{{ u.id }}">{{ u.email }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">產生一次性驗證碼</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>填寫圖標顯示資料</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- Leaflet 地圖 CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <!-- Esri 地理搜尋 CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css"
+  />
+</head>
+<body>
+  <h1>填寫圖標顯示資料</h1>
+  <form method="POST" action="{{ form_action }}">
+
+    <!-- ✅ 是否公開真實姓名 -->
+    <label>
+      <input type="checkbox" name="real_name_public" {% if profile and profile.real_name_public %}checked{% endif %}>
+      顯示真實姓名（勾選後圖標上會顯示真名）
+    </label><br><br>
+
+    <label>服務區域：
+      <input type="text" name="service_area" required value="{{ profile.service_area if profile else '' }}">
+    </label><br><br>
+
+    <label>師培結訓年度（必填）：
+      <input type="number" name="certification_year" required value="{{ profile.certification_year if profile else '' }}">
+    </label><br><br>
+
+    <label>結訓證號（必填）：
+      <input type="text" name="certification_number" required value="{{ profile.certification_number if profile else '' }}">
+    </label><br><br>
+
+    <label>國家檢定證號（可選填）：
+      <input type="text" name="license_number" placeholder="如無可留空" value="{{ profile.license_number if profile else '' }}">
+    </label><br><br>
+
+    <!-- 📍 地點名稱（這欄不存入 DB，所以無法預填）-->
+    <label>輸入地點名稱（輸入後再按下「查詢座標」即可自動填入經緯度）：
+      <input type="text" id="location-name" placeholder="請輸入您方便標記的公共空間位置，例如：淡水捷運站">
+      <button type="button" onclick="searchLocation()">查詢座標</button>
+    </label><br><br>
+
+    <!-- 🌐 經緯度 -->
+    <label>緯度 (lat)：
+      <input type="text" id="lat" name="lat" required readonly value="{{ profile.lat if profile else '' }}">
+    </label><br>
+
+    <label>經度 (lng)：
+      <input type="text" id="lng" name="lng" required readonly value="{{ profile.lng if profile else '' }}">
+    </label><br><br>
+
+    <!-- ✅ 可線上教學 -->
+    <label>
+      <input type="checkbox" name="can_teach_online" {% if profile and profile.can_teach_online %}checked{% endif %}>
+      可線上教學
+    </label><br><br>
+
+    <!-- 🕒 可上課時間（複選）-->
+    <fieldset>
+      <legend><strong>🕒 可上課時間（可複選）</strong></legend>
+      {% set times = profile.available_times.split(',') if profile and profile.available_times else [] %}
+      <label><input type="checkbox" name="available_times" value="weekday_day" {% if 'weekday_day' in times %}checked{% endif %}> 平日白天</label><br>
+      <label><input type="checkbox" name="available_times" value="weekday_night" {% if 'weekday_night' in times %}checked{% endif %}> 平日晚上</label><br>
+      <label><input type="checkbox" name="available_times" value="weekend_day" {% if 'weekend_day' in times %}checked{% endif %}> 週末白天</label><br>
+      <label><input type="checkbox" name="available_times" value="weekend_night" {% if 'weekend_night' in times %}checked{% endif %}> 週末晚上</label>
+    </fieldset><br>
+
+    <!-- 🚗 交通方式（複選）-->
+    <fieldset>
+      <legend><strong>🚗 交通方式（可複選）</strong></legend>
+      {% set transport = profile.transport_modes.split(',') if profile and profile.transport_modes else [] %}
+      <label><input type="checkbox" name="transport" value="public" {% if 'public' in transport %}checked{% endif %}> 大眾運輸</label><br>
+      <label><input type="checkbox" name="transport" value="scooter" {% if 'scooter' in transport %}checked{% endif %}> 機車</label><br>
+      <label><input type="checkbox" name="transport" value="car" {% if 'car' in transport %}checked{% endif %}> 開車</label>
+    </fieldset><br>
+
+    <!-- 📝 自我介紹 -->
+    <label>自我介紹：<br>
+      <textarea name="intro" rows="5" cols="40" placeholder="簡短介紹，包含方便公開的聯絡方式。">{{ profile.intro if profile else '' | e }}</textarea>
+    </label><br><br>
+
+    <!-- 👩‍🏫 教學經驗 -->
+    <fieldset>
+      <legend><strong>👩‍🏫 您曾經有過的教學經驗（請根據事實，可複選）</strong></legend>
+      {% set teach_exp = profile.teaching_experience.split(',') if profile and profile.teaching_experience else [] %}
+      <label><input type="checkbox" name="teaching_experience" value="visually_impaired" {% if 'visually_impaired' in teach_exp %}checked{% endif %}> 單純視障</label><br>
+      <label><input type="checkbox" name="teaching_experience" value="multi_disabilities" {% if 'multi_disabilities' in teach_exp %}checked{% endif %}> 視覺+其他障礙（視多障）</label><br>
+      <label><input type="checkbox" name="teaching_experience" value="preschool" {% if 'preschool' in teach_exp %}checked{% endif %}> 學齡前（幼兒）</label><br>
+      <label><input type="checkbox" name="teaching_experience" value="students" {% if 'students' in teach_exp %}checked{% endif %}> 學生（不含大學）</label><br>
+      <label><input type="checkbox" name="teaching_experience" value="adults" {% if 'adults' in teach_exp %}checked{% endif %}> 成人（含大學生）</label><br>
+      <label><input type="checkbox" name="teaching_experience" value="seniors" {% if 'seniors' in teach_exp %}checked{% endif %}> 高齡者（70歲以上）</label>
+    </fieldset><br>
+
+    <!-- 🗣️ 語言能力 -->
+    <fieldset>
+      <legend><strong>🗣️ 語言能力（可複選）</strong></legend>
+      {% set langs = profile.lang_skills.split(',') if profile else [] %}
+      <label><input type="checkbox" name="language_skills" value="mandarin" {% if 'mandarin' in langs %}checked{% endif %}> 華語</label><br>
+      <label><input type="checkbox" name="language_skills" value="taiwanese" {% if 'taiwanese' in langs %}checked{% endif %}> 台語</label><br>
+      <label><input type="checkbox" name="language_skills" value="english" {% if 'english' in langs %}checked{% endif %}> 英語</label><br>
+      <label><input type="checkbox" name="language_skills" value="hakka" {% if 'hakka' in langs %}checked{% endif %}> 客語</label><br>
+
+      {% set other_lang = '' %}
+      {% for lang in langs %}
+        {% if lang.startswith('other:') %}
+          {% set other_lang = lang.split(':', 1)[1] %}
+        {% endif %}
+      {% endfor %}
+
+      <label>
+        <input type="checkbox" id="lang-other-checkbox" name="language_skills" value="other" {% if other_lang %}checked{% endif %} onchange="toggleOtherLangInput()"> 其他：
+      </label>
+       <input type="text" id="lang-other-text" name="language_other" style="display: {% if other_lang %}inline-block{% else %}none{% endif %};" placeholder="請輸入其他語言" value="{{ other_lang }}"><br>
+    </fieldset><br>
+
+    <label>
+      <input type="checkbox" name="agree_terms" required {% if profile and profile.agree_terms %}checked{% endif %}>
+      本人確認所填資料皆屬實，若有不實或偽造，將自行負法律責任，並與本平台無關。
+    </label><br><br>
+
+    <button type="submit">送出申請</button><br><br>
+    <button type="button" onclick="window.history.back()">取消申請</button>
+
+  </form>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Leaflet 地圖 JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    function toggleOtherLangInput() {
+      const checkbox = document.getElementById('lang-other-checkbox');
+      const input = document.getElementById('lang-other-text');
+      input.style.display = checkbox.checked ? 'inline-block' : 'none';
+    }
+
+    async function searchLocation() {
+      const locationName = document.getElementById('location-name').value;
+      if (!locationName) {
+        alert('請輸入地點名稱');
+        return;
+      }
+
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName)}&limit=1`;
+
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'Accept-Language': 'zh-TW',
+            'User-Agent': 'your-app-name-here'
+          }
+        });
+        const data = await response.json();
+
+        if (data.length === 0) {
+          alert('查無結果，請換個名稱試試');
+          return;
+        }
+
+        const lat = data[0].lat;
+        const lon = data[0].lon;
+        document.getElementById('lat').value = parseFloat(lat).toFixed(6);
+        document.getElementById('lng').value = parseFloat(lon).toFixed(6);
+        alert('查詢成功，已填入座標');
+      } catch (error) {
+        alert('發生錯誤，請稍後再試');
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>

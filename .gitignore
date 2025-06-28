@@ -1,0 +1,53 @@
+# 👉 Python 編譯暫存
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+*.log
+
+# 👉 虛擬環境
+.venv/
+env/
+venv/
+ENV/
+.Python
+
+# 👉 Flask 專案
+instance/
+.env
+*.sqlite3
+*.db
+
+# 👉 IDE 設定檔
+.vscode/
+.idea/
+
+# 👉 macOS 系統檔
+.DS_Store
+
+# 👉 Windows 系統檔
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# 👉 測試與覆蓋率
+htmlcov/
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# 👉 打包發行
+build/
+dist/
+*.tar.gz
+*.whl
+*.egg-info/
+*.egg
+
+# 👉 Render 佈署設定（如你有用）
+render.yaml

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OMTW-Map｜台灣定向行動師資地圖</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Esri Geocoder CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css" />
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    #map {
+      height: 100vh;
+    }
+    .btn {
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      margin: 0.3rem;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 按鈕列 -->
+  <div style="position: absolute; top: 10px; left: 10px; z-index: 9999; background: white; padding: 10px; border-radius: 8px;">
+    {% if current_user.is_authenticated %}
+      {% if user_profile %}
+        <a href="{{ url_for('edit_profile', profile_id=user_profile.id) }}"><button>更新圖標</button></a>
+        <a href="{{ url_for('delete_profile', profile_id=user_profile.id) }}"><button>刪除圖標</button></a>
+      {% else %}
+        <a href="{{ url_for('profile') }}"><button>建立圖標</button></a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}"><button>登出</button></a>
+    {% else %}
+      <a href="{{ url_for('login') }}"><button>登入</button></a>
+    {% endif %}
+    <button onclick="showHelp()">使用說明</button>
+    {% if current_user.is_authenticated and current_user.is_admin %}
+      <a href="{{ url_for('admin_panel') }}"><button>🛠️ 管理後台</button></a>
+    {% endif %}
+  </div>
+
+  {% if current_user.is_authenticated and not user_profile %}
+    <div style="position: absolute; bottom: 20px; left: 20px; z-index: 9999; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+      👋 歡迎加入！你尚未建立圖標，點選「建立圖標」按鈕即可完成。
+    </div>
+  {% endif %}
+
+  <!-- Flash 訊息提示 -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div style="position: absolute; top: 10px; right: 10px; background: #dff0d8; color: #3c763d; padding: 10px; border: 1px solid #d6e9c6; border-radius: 5px; z-index: 9999;">
+        {% for message in messages %}
+          <div>{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+  <script src="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.js"></script>
+
+  <script>
+    function showHelp() {
+      alert("🧭 使用說明：\n\n📍 地圖上每個圖標代表一位定向行動老師。\n👤 登入後可新增或更新自己的圖標資訊。\n📝 若不想公開真名，可選擇匿名顯示。\n\n➡ 點選圖標可查看詳情！");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const map = L.map('map').setView([23.6978, 120.9605], 7);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '地圖資料 &copy; OpenStreetMap 貢獻者'
+      }).addTo(map);
+
+      const searchControl = L.esri.Geocoding.geosearch().addTo(map);
+      const results = L.layerGroup().addTo(map);
+
+      searchControl.on('results', function (data) {
+        results.clearLayers();
+        for (let i = 0; i < data.results.length; i++) {
+          results.addLayer(L.marker(data.results[i].latlng));
+        }
+      });
+
+      const timeMap = {
+        'weekday_day': '平日白天',
+        'weekday_night': '平日晚上',
+        'weekend_day': '週末白天',
+        'weekend_night': '週末晚上'
+      };
+      const transportMap = {
+        'public': '大眾運輸',
+        'scooter': '機車',
+        'car': '開車',
+      };
+      const langMap = {
+        'mandarin': '華語',
+        'taiwanese': '台語',
+        'english': '英語',
+        'hakka': '客語',
+        'other': '其他',
+      };
+
+      fetch('/api/teachers')
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(t => {
+            const displayName = t.real_name_public ? `${t.real_name}（${t.nickname}）` : t.nickname;
+            const timeText = t.available_times?.split(',').map(k => timeMap[k] || k).join('、') || '（未提供）';
+            const transportText = t.transport_modes?.split(',').map(k => transportMap[k] || k).join('、') || '（未提供）';
+            const langText = t.lang_skills?.split(',').map(k => langMap[k] || k).join('、') || '（未提供）';
+
+            const customIcon = L.icon({
+              iconUrl: '/static/img/omtw2.png',
+              iconSize: [34, 34],
+              iconAnchor: [16, 32],
+              popupAnchor: [0, -32]
+            });
+
+            const marker = L.marker([t.lat, t.lng], { icon: customIcon }).addTo(map);
+            marker.bindPopup(`
+              <b>${t.name}</b><br>
+              教學地區：${t.service_area}<br>
+              結訓年份：${t.certification_year}<br>
+              結訓證號：${t.certification_number}<br>
+              國家證號：${t.license_number || '（未提供）'}<br>
+              <a href="/profile/view/${t.id}" target="_blank">🔍 詳細內容</a>
+            `);
+          });
+        })
+        .then(() => {
+          setTimeout(() => {
+            map.invalidateSize();
+          }, 300);
+        });
+
+      window.addEventListener('resize', () => {
+        map.invalidateSize();
+      });
+    });
+  </script>
+</body>
+</html>

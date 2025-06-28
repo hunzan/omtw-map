@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>台灣定向行動師資平台</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    .logo {
+      margin-bottom: 1rem;
+    }
+    .btn {
+      margin: 1rem;
+      padding: 0.8rem 1.5rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    .intro {
+      margin-top: 2rem;
+      font-size: 1.0rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <h1><img src="{{ url_for('static', filename='img/omtw1.png') }}" alt="台灣定向行動師資平台圖示" width="77"> 歡迎來到台灣定向行動師資平台</h1>
+
+  <p class="intro">
+    本平台為台灣定向行動老師登錄的免費公益平台，提供老師們<strong>免費登錄圖標及基本可公開資訊</strong>。<br>
+    促進老師們與尋求師資的單位或個人媒合及交流，使用開放地圖標記，每個標記代表一位定向行動老師。<br>
+    <strong>不用註冊登入便能查找圖標，只有要註冊的老師需要註冊登入，並建立自己的圖標</strong>。<br>
+    敬祝使用愉快順心～
+  </p>
+  <br>
+  <div>
+    <a class="btn" href="{{ url_for('map_page') }}">進入定向行動師資地圖</a>
+    <a class="btn" href="{{ url_for('register') }}">註冊帳號</a>
+  </div>
+   <br>
+<p>
+  © 2025 開發者：Lîm A-kâu（林阿猴） & Kim Chio（金蕉）｜
+  <a href="{{ url_for('disclaimer') }}" class="underline text-blue-600 hover:text-blue-800">平台免責聲明</a>
+</p>
+</body>
+</html>

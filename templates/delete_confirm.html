@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>刪除資料確認</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<h2>你確定要刪除此筆資料嗎？</h2>
+<p>服務地區：{{ profile.service_area }}</p>
+<p>結訓年份：{{ profile.certification_year }}</p>
+<p>座標：{{ profile.lat }}, {{ profile.lng }}</p>
+
+<form method="POST">
+  <button type="submit">確定刪除</button>
+  <a href="{{ url_for('map_page') }}"><button type="button">取消</button></a>
+</form>
+
+<body>
+
+</body>
+</html>

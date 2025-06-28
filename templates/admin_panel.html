@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>管理後台</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+<h2>管理後台 🍌
+<a class="admin-btn" href="{{ url_for('map_page') }}">回地圖平台</a>
+<a class="admin-btn" href="{{ url_for('admin_reset_code') }}">處理驗證</a>
+</h2>
+
+<table border="1">
+  <tr>
+    <th>ID</th><th>Email</th><th>姓名</th><th>暱稱</th><th>狀態</th><th>操作</th>
+  </tr>
+  {% for user in users %}
+  <tr>
+    <td>{{ user.id }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.real_name }}</td>
+    <td>{{ user.nickname }}</td>
+    <td>
+      {% if user.is_active %}
+        ✅ 啟用
+      {% else %}
+        ❌ 停用
+      {% endif %}
+    </td>
+    <td>
+      <form action="{{ url_for('toggle_user', user_id=user.id) }}" method="post">
+        <button type="submit" class="admin-btn">
+          {% if user.is_active %}停用{% else %}啟用{% endif %}
+        </button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>

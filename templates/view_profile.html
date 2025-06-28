@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>定向行動老師聯絡資訊</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .modal {
+      display: block; /* 若嵌入 map.html 可設為 none，再由 JS 控制開關 */
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 2rem;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: black;
+    }
+
+    .modal-footer {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .btn-back {
+      padding: 0.5rem 1.5rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-back:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="window.close()">&times;</span>
+
+    <h2>{{ profile.display_name }}</h2>
+
+    <h3>📇 聯絡與教學資訊</h3>
+
+    <p><strong>服務地區：</strong>{{ profile.service_area }}</p>
+    <p><strong>結訓年份：</strong>{{ profile.certification_year }}</p>
+    <p><strong>結訓證號：</strong>{{ profile.certification_number }}</p>
+    <p><strong>國家證號：</strong>{{ profile.license_number or '（未提供）' }}</p>
+    <p><strong>可否遠距：</strong>{{ '✅ 可以線上教學' if profile.can_teach_online else '❌ 無法線上教學' }}</p>
+    <p><strong>可教學時段：</strong>
+      {{ profile.available_times | replace('weekday_day', '平日白天')
+                                 | replace('weekday_night', '平日晚上')
+                                 | replace('weekend_day', '週末白天')
+                                 | replace('weekend_night', '週末晚上')
+                                 | replace(',', '、') }}
+    </p>
+
+    <p><strong>交通方式：</strong>{{
+      profile.transport_modes
+      | replace('public', '大眾運輸')
+      | replace('scooter', '機車')
+      | replace('car', '開車')
+      | replace(',', '、')
+    }}</p>
+
+<p><strong>教學經驗：</strong>
+  {{
+    (profile.teaching_experience or '（未提供）')
+    | replace('visually_impaired', '單純視障')
+    | replace('multi_disabilities', '視多障')
+    | replace('preschool', '學齡前')
+    | replace('students', '學生')
+    | replace('adults', '成人')
+    | replace('seniors', '高齡者')
+    | replace(',', '、')
+  }}
+</p>
+
+    <p><strong>語言能力：</strong>
+      {{ profile.lang_skills | replace('mandarin', '華語')
+                             | replace('taiwanese', '台語')
+                             | replace('english', '英語')
+                             | replace('hakka', '客語')
+                             | replace('other', '其他')
+                             | replace(',', '、') }}
+    </p>
+    <p><strong>簡介：</strong>{{ profile.intro | replace('\n', '<br>') | safe }}</p>
+
+    <!-- 將按鈕改成「關閉視窗」 -->
+    <div class="modal-footer">
+      <button class="btn-back" onclick="window.close()">關閉視窗</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

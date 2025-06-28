@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <title>老師註冊申請</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+  /* 🚀 頂部註冊按鈕樣式 */
+  .top-register-btn {
+    display: inline-block;
+    margin: 1rem 0;
+    padding: 0.5rem 1.2rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+  }
+
+  .top-register-btn:hover {
+    background-color: #0056b3;
+    color: white;
+    text-decoration: none;
+  }
+
+  /* ❗ flash 訊息樣式 */
+  ul.flash-messages {
+    padding-left: 0;
+    list-style: none;
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .flash-messages li {
+    color: red;
+    font-weight: bold;
+    background-color: #ffeaea;
+    border: 1px solid #ffaaaa;
+    padding: 0.5rem;
+    border-radius: 5px;
+    max-width: 400px;
+    margin: 0.5rem auto;
+  }
+</style>
+
+</head>
+<body>
+    <h1>定向行動老師註冊申請 🦯</h1>
+
+    <!-- 顯示註冊錯誤或成功訊息 -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('register') }}">
+      <label>Email：
+        <input type="email" name="email" required>
+      </label><br><br>
+
+      <label>真實姓名（必填）：
+        <input type="text" name="real_name" required>
+      </label><br><br>
+
+      <label>暱稱（若不顯示真實姓名者，必填）：
+        <input type="text" name="nickname" required>
+      </label><br><br>
+
+      <label>
+        <input type="checkbox" name="show_real_name">
+        願意公開真實姓名（否則僅顯示暱稱）
+      </label><br><br>
+
+      <label>設定密碼：
+        <input type="password" name="password" required>
+      </label><br><br>
+
+      <button type="submit">送出註冊</button>
+    </form>
+
+</body>
+</html>
