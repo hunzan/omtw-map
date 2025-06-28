@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 import secrets
 import os
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 # 先載入 .env 變數
 load_dotenv()
 
@@ -471,15 +473,11 @@ def disclaimer():
     return render_template('disclaimer.html')
 
 if __name__ == "__main__":
-    # ✅ 根據實際 config 設定的 DB 路徑建立資料庫
-    db_uri = app.config["SQLALCHEMY_DATABASE_URI"]
-    if db_uri.startswith("sqlite:///"):
-        db_path = db_uri.replace("sqlite:///", "")
-        if not os.path.exists(db_path):
-            with app.app_context():
-                db.create_all()
+    db_path = os.environ.get("DB_PATH", os.path.join(basedir, "instance", "database.db"))
+    if not os.path.exists(db_path):
+        with app.app_context():
+            db.create_all()
 
-    # ✅ 開發環境才開 debug 模式
     if os.environ.get("FLASK_ENV") == "development":
         app.run(debug=True)
 
