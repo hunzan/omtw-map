@@ -10,22 +10,29 @@ from dotenv import load_dotenv
 import secrets
 import os
 
+# 專案根目錄
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# 先載入 .env 變數
+# ✅ 先載入 .env 變數
 load_dotenv()
 
+# ✅ 建立 Flask app 並載入 config
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# 初始化擴充功能
+# ✅ 初始化擴充功能
 db.init_app(app)
 migrate = Migrate(app, db)
 mail = Mail(app)
 
+# ✅ 登入管理
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+
+# ✅ 建立資料表（如果還沒建立的話）
+with app.app_context():
+    db.create_all()
 
 def admin_required(f):
     @wraps(f)
@@ -473,12 +480,8 @@ def disclaimer():
     return render_template('disclaimer.html')
 
 if __name__ == "__main__":
-    db_path = os.environ.get("DB_PATH", os.path.join(basedir, "instance", "database.db"))
-    if not os.path.exists(db_path):
-        with app.app_context():
-            db.create_all()
-
-    if os.environ.get("FLASK_ENV") == "development":
-        app.run(debug=True)
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
 
 
