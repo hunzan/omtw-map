@@ -14,7 +14,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # ✅ 先載入 .env 變數
-load_dotenv()
+load_dotenv(os.path.join(basedir, ".env"))
 
 # ✅ 建立 Flask app 並載入 config
 app = Flask(__name__)

@@ -1,4 +1,9 @@
 import os
+from dotenv import load_dotenv
+
+# ✅ 一進 config.py 就先載入 .env
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, ".env"))
 
 class Config:
     # ✅ 資料庫設定（強烈建議部署前要設定 DATABASE_URL）
