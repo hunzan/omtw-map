@@ -9,7 +9,7 @@ class User(db.Model, UserMixin):
 
     # 登入帳號與驗證
     email = db.Column(db.String(256), unique=True, nullable=False)  # 加長防止 email 超過 120 字元
-    password_hash = db.Column(db.String(256), nullable=False)       # hash 值可更長（推薦 256）
+    password_hash = db.Column(db.String(512), nullable=False)       # hash 值可更長（推薦 256）
 
     # ✅ 設定密碼（會加密存入）
     def set_password(self, password):

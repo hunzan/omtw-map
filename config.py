@@ -18,4 +18,4 @@ class Config:
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_USERNAME")   # 預設寄件人，等於寄件帳號
 
     # ✅ 管理員信箱（可用於通知或報錯提醒）
-    ADMIN_EMAIL = os.environ["ADMIN_EMAIL"]
+    ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@example.com")

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
+from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, TeacherProfile
@@ -6,7 +7,6 @@ from config import Config
 from flask_migrate import Migrate
 from functools import wraps
 from flask_mail import Mail, Message
-from dotenv import load_dotenv
 import secrets
 import os
 
