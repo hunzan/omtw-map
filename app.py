@@ -70,9 +70,9 @@ def verify_code_request():
         mail.send(msg)
 
         flash("已通知管理員，請稍候會與您聯繫")
-        return redirect(url_for("login"))
+        return redirect(url_for("reset_password.html"))
 
-    return render_template("reset_password.html")
+    return render_template("verify_code.html")
 
 @app.route("/admin/reset_code", methods=["GET", "POST"])
 @login_required  # 只限管理員
