@@ -70,7 +70,7 @@ def verify_code_request():
         mail.send(msg)
 
         flash("已通知管理員，請稍候會與您聯繫")
-        return redirect(url_for("reset_password.html"))
+        return redirect(url_for("reset_password"))
 
     return render_template("verify_code.html")
 
