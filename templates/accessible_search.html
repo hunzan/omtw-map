@@ -1,10 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>無障礙查找老師｜OMTW 師資地圖</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/omtw.ico') }}">
+  <style>
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+      padding: 1.5rem;
+      line-height: 1.8;
+      background: #f9f9f9;
+      color: #222;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result-item {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 6px;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      text-decoration: none;
+      color: #007bff;
+    }
+  </style>
 </head>
 <body>
+  <h1 role="heading" aria-level="1">🔍 無障礙查找老師</h1>
 
+  <label for="keyword">輸入老師姓名、暱稱或地區：</label>
+  <input type="text" id="keyword" aria-label="關鍵字搜尋輸入欄位" placeholder="例如：林阿猴、金蕉、台北市" />
+  <button onclick="search()">搜尋老師</button>
+
+  <div id="resultCount" aria-live="polite" role="status" aria-atomic="true" style="margin-top: 1rem;"></div>
+  <div id="results" aria-live="polite" role="region" tabindex="-1"></div>
+
+  <a class="back-link" href="{{ url_for('map_page') }}">⬅️ 回地圖頁面</a>
+
+  <script>
+    function search() {
+      const keyword = document.getElementById('keyword').value.trim();
+      const resultsDiv = document.getElementById('results');
+      const countDiv = document.getElementById('resultCount');
+
+      if (!keyword) {
+        countDiv.textContent = '';
+        resultsDiv.innerHTML = '<p>請輸入關鍵字再進行搜尋。</p>';
+        return;
+      }
+
+      fetch(`/api/search_teacher?keyword=${encodeURIComponent(keyword)}`)
+        .then(res => res.json())
+        .then(data => {
+          resultsDiv.innerHTML = '';
+          if (data.length === 0) {
+            countDiv.textContent = '查無符合條件的老師。';
+            return;
+          }
+
+          countDiv.textContent = `共找到 ${data.length} 位老師：`;
+
+          data.forEach(t => {
+            const article = document.createElement('article');
+            article.className = 'result-item';
+            article.setAttribute('aria-label', `老師：${t.name}`);
+
+            const dl = document.createElement('dl');
+
+            const fields = [
+              ['姓名：', t.name],
+              ['教學地區：', t.service_area || '未提供'],
+              ['結訓年份：', t.certification_year || '未提供'],
+              ['結訓證號：', t.certification_number || '未提供'],
+              ['國家證號：', t.license_number || '未提供']
+            ];
+
+            fields.forEach(([label, value]) => {
+              const dt = document.createElement('dt');
+              dt.textContent = label;
+              const dd = document.createElement('dd');
+              dd.textContent = value;
+              dl.appendChild(dt);
+              dl.appendChild(dd);
+            });
+
+            const link = document.createElement('a');
+            link.href = `/profile/view/${t.id}`;
+            link.target = '_blank';
+            link.textContent = '🔍 詳細內容';
+            link.setAttribute('aria-label', `查看 ${t.name} 的詳細資料`);
+
+            article.appendChild(dl);
+            article.appendChild(link);
+            resultsDiv.appendChild(article);
+          });
+
+          // 移動焦點到結果區，幫助 NVDA 読出新內容
+          resultsDiv.focus();
+        })
+        .catch(() => {
+          countDiv.textContent = '搜尋時發生錯誤，請稍後再試。';
+        });
+    }
+  </script>
 </body>
 </html>

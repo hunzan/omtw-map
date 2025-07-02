@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, f
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import or_
 from models import db, User, TeacherProfile
 from config import Config
 from flask_migrate import Migrate
@@ -479,9 +480,42 @@ def map_page():
 def disclaimer():
     return render_template('disclaimer.html')
 
-@app.route('/accessible-search')
+@app.route('/accessible_search')
 def accessible_search():
-    return render_template('accessible_search.html')
+    return render_template("accessible_search.html")
+
+@app.route('/api/search_teacher')
+def search_teacher():
+    keyword = request.args.get('keyword', '').strip()
+    if not keyword:
+        return jsonify([])
+
+    query = TeacherProfile.query.filter(
+        or_(
+            TeacherProfile.real_name.ilike(f'%{keyword}%'),
+            TeacherProfile.nickname.ilike(f'%{keyword}%'),
+            TeacherProfile.service_area.ilike(f'%{keyword}%')
+        )
+    ).all()
+
+    result = []
+    for t in query:
+        # 按老師設定決定要顯示什麼名稱
+        if t.real_name_public and t.real_name:
+            display_name = f"{t.real_name}（{t.nickname}）"
+        else:
+            display_name = t.nickname or "未提供"
+
+        result.append({
+            "id": t.id,
+            "name": display_name,
+            "service_area": t.service_area or "未提供",
+            "certification_year": t.certification_year or "未提供",
+            "certification_number": t.certification_number or "未提供",
+            "license_number": t.license_number or "未提供"
+        })
+
+    return jsonify(result)
 
 if __name__ == "__main__":
     with app.app_context():
