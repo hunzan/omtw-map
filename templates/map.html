@@ -34,24 +34,25 @@
     .btn:hover {
       background-color: #0056b3;
     }
+    /* 🧱 最外層控制 legend 區塊不會撐爆地圖 */
     .legend {
       max-width: 250px;
-      max-height: 30vh;  /* 加這行限制最大高度 */
-      overflow-y: auto;  /* 可上下滑動 */
       background: rgba(255, 255, 255, 0.9);
       padding: 8px 12px;
+      bottom: 30px;
       border-radius: 8px;
       font-size: 14px;
       line-height: 1.5;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
       pointer-events: auto;
-      overflow-wrap: break-word;
+      overflow: hidden;
       z-index: 1000;
     }
-
     @media (max-width: 480px) {
       .legend {
-        max-width: 90vw;
+        max-width: 90vw; /* ⬅️ 避免超過螢幕寬度 */
+        font-size: 12px;
+        padding: 6px 8px;
       }
     }
 
