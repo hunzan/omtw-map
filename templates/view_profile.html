@@ -73,7 +73,7 @@
     <p><strong>結訓年份：</strong>{{ profile.certification_year }}</p>
     <p><strong>結訓證號：</strong>{{ profile.certification_number }}</p>
     <p><strong>國家證號：</strong>{{ profile.license_number or '（未提供）' }}</p>
-    <p><strong>可否遠距：</strong>{{ '✅ 可以線上教學' if profile.can_teach_online else '❌ 無法線上教學' }}</p>
+    <p><strong>兼具生活技能教學資格：</strong>{{ '✅ 具備（需附證明）' if profile.can_teach_online else '⛔ 僅提供定向行動教學' }}</p>
     <p><strong>可教學時段：</strong>
       {{ profile.available_times | replace('weekday_day', '平日白天')
                                  | replace('weekday_night', '平日晚上')

@@ -57,10 +57,10 @@
       <input type="text" id="lng" name="lng" required readonly value="{{ profile.lng if profile else '' }}">
     </label><br><br>
 
-    <!-- ✅ 可線上教學 -->
+    <!-- ✅ 具備視障生活技能教學資格 -->
     <label>
       <input type="checkbox" name="can_teach_online" {% if profile and profile.can_teach_online %}checked{% endif %}>
-      可線上教學
+      具備視障生活技能教學資格
     </label><br><br>
 
     <!-- 🕒 可上課時間（複選）-->
