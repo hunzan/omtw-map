@@ -479,6 +479,10 @@ def map_page():
 def disclaimer():
     return render_template('disclaimer.html')
 
+@app.route('/accessible-search')
+def accessible_search():
+    return render_template('accessible_search.html')
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

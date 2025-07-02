@@ -18,6 +18,8 @@
     }
     #map {
       height: 100vh;
+      width: 100%;
+      max-width: 100%;
     }
     .btn {
       padding: 0.5rem 1rem;
@@ -34,9 +36,9 @@
     }
     /* 🧱 最外層控制 legend 區塊不會撐爆地圖 */
     .legend {
-      max-width: 200px;
-      background-color: white;
-      padding: 10px;
+      max-width: 250px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 12px;
       border-radius: 8px;
       font-size: 14px;
       line-height: 1.5;
@@ -45,12 +47,16 @@
       overflow: hidden;
       z-index: 1000;
     }
+    @media (max-width: 480px) {
+      .legend {
+        font-size: 12px;
+        padding: 6px 8px;
+      }
+    }
 
-    /* 🧱 確保圖片不影響 layout */
-    .legend-container {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .legend-title {
+      font-weight: bold;
+      margin-bottom: 6px;
     }
 
     /* 🖼️ 每一行圖例 */
@@ -58,6 +64,7 @@
       display: flex;
       align-items: center;
       white-space: nowrap;
+      gap: 6px;
     }
 
     /* 🎯 限制圖片大小，避免吃原圖尺寸 */
@@ -68,6 +75,31 @@
       margin-right: 6px;
       flex-shrink: 0;
     }
+      .leaflet-control-search {
+      max-width: 90%;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 480px) {
+      .leaflet-control-search {
+        width: 90%;
+        font-size: 14px;
+        margin: 0 auto;
+      }
+    }
+    .mobile-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #ffffffee;
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 0;
+      border-top: 1px solid #ccc;
+      font-size: 16px;
+      z-index: 1000;
+    }
+
   </style>
 </head>
 
@@ -85,7 +117,12 @@
     {% else %}
       <a href="{{ url_for('login') }}"><button>登入</button></a>
     {% endif %}
+
+    <!-- ➕ 加入無障礙查找按鈕 -->
+    <a href="{{ url_for('accessible_search') }}"><button>🦯 無障礙查找頁面</button></a>
+
     <button onclick="showHelp()">使用說明</button>
+
     {% if current_user.is_authenticated and current_user.is_admin %}
       <a href="{{ url_for('admin_panel') }}"><button>🛠️ 管理後台</button></a>
     {% endif %}
