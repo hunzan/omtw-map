@@ -15,6 +15,7 @@
     .logo {
       margin-bottom: 1rem;
     }
+
     .btn {
       margin: 1rem;
       padding: 0.8rem 1.5rem;
@@ -25,6 +26,18 @@
       font-size: 1.1rem;
       text-decoration: none;
     }
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      flex: 1 1 200px;
+      max-width: 300px;
+    }
+
     .btn:hover {
       background-color: #0056b3;
     }
@@ -45,13 +58,11 @@
     <strong>不用註冊登入便能查找圖標，只有要註冊的老師需要註冊登入，並建立自己的圖標</strong>。<br>
     敬祝使用愉快順心～
   </p>
-  <br>
-  <div>
-    <a class="btn" href="{{ url_for('accessible_search') }}">無障礙查找頁面</a>
-    <a class="btn" href="{{ url_for('map_page') }}">進入師資地圖</a>
-    <a class="btn" href="{{ url_for('register') }}">註冊帳號</a>
-  </div>
-   <br>
+    <div class="button-container">
+      <a class="btn" href="{{ url_for('accessible_search') }}">無障礙查找頁面</a>
+      <a class="btn" href="{{ url_for('map_page') }}">進入師資地圖</a>
+      <a class="btn" href="{{ url_for('register') }}">註冊帳號</a>
+    </div>
 <p>
   © 2025 開發者：Lîm A-kâu（林阿猴） & Kim Chio（金蕉）｜
   <a href="{{ url_for('disclaimer') }}" class="underline text-blue-600 hover:text-blue-800">平台免責聲明</a>
