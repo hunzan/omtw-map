@@ -123,8 +123,9 @@
     document.addEventListener("DOMContentLoaded", function () {
       const map = L.map('map').setView([23.6978, 120.9605], 7);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '地圖資料 &copy; OpenStreetMap 貢獻者'
+      L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}', {
+        attribution: '&copy; 內政部國土測繪中心',
+        maxZoom: 19
       }).addTo(map);
 
       const searchControl = L.esri.Geocoding.geosearch().addTo(map);
@@ -189,7 +190,7 @@
             const div = L.DomUtil.create('div', 'legend');
             L.DomEvent.disableClickPropagation(div);  // ✅ 修正卡住問題
             div.innerHTML = `
-              <div class="legend-title">圖標說明</div>
+              <div class="legend-title">圖標說明：</div>
               <div class="legend-item">
                 <img src="/static/img/omtw2_legend.png" class="legend-icon"> 兼具生活技能教學資格
               </div>
