@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, f
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from models import db, User, TeacherProfile
 from config import Config
 from flask_migrate import Migrate
@@ -492,27 +492,26 @@ def search_teacher():
 
     query = TeacherProfile.query.filter(
         or_(
-            TeacherProfile.real_name.ilike(f'%{keyword}%'),
-            TeacherProfile.nickname.ilike(f'%{keyword}%'),
-            TeacherProfile.service_area.ilike(f'%{keyword}%')
+            func.lower(TeacherProfile.nickname).contains(keyword.lower()),
+            func.lower(TeacherProfile.real_name).contains(keyword.lower()),
+            func.lower(TeacherProfile.service_area).contains(keyword.lower())
         )
     ).all()
 
     result = []
     for t in query:
-        # 按老師設定決定要顯示什麼名稱
-        if t.real_name_public and t.real_name:
+        if t.real_name_public and t.real_name and t.nickname:
             display_name = f"{t.real_name}（{t.nickname}）"
+        elif t.real_name_public and t.real_name:
+            display_name = t.real_name
+        elif t.nickname:
+            display_name = t.nickname
         else:
-            display_name = t.nickname or "未提供"
+            display_name = "未提供"
 
         result.append({
             "id": t.id,
-            "name": display_name,
-            "service_area": t.service_area or "未提供",
-            "certification_year": t.certification_year or "未提供",
-            "certification_number": t.certification_number or "未提供",
-            "license_number": t.license_number or "未提供"
+            "name": display_name
         })
 
     return jsonify(result)

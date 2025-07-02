@@ -31,18 +31,14 @@
     button:hover {
       background-color: #0056b3;
     }
-    .result-item {
-      background: white;
-      border: 1px solid #ddd;
-      padding: 1rem;
-      margin-top: 1rem;
-      border-radius: 6px;
-    }
     .back-link {
       display: inline-block;
       margin-top: 2rem;
       text-decoration: none;
       color: #007bff;
+    }
+    ul {
+      padding-left: 1rem;
     }
   </style>
 </head>
@@ -54,7 +50,7 @@
   <button onclick="search()">搜尋老師</button>
 
   <div id="resultCount" aria-live="polite" role="status" aria-atomic="true" style="margin-top: 1rem;"></div>
-  <div id="results" aria-live="polite" role="region" tabindex="-1"></div>
+  <ul id="results" aria-live="polite" role="region" tabindex="-1"></ul>
 
   <a class="back-link" href="{{ url_for('map_page') }}">⬅️ 回地圖頁面</a>
 
@@ -66,7 +62,7 @@
 
       if (!keyword) {
         countDiv.textContent = '';
-        resultsDiv.innerHTML = '<p>請輸入關鍵字再進行搜尋。</p>';
+        resultsDiv.innerHTML = '<li>請輸入關鍵字再進行搜尋。</li>';
         return;
       }
 
@@ -81,43 +77,17 @@
 
           countDiv.textContent = `共找到 ${data.length} 位老師：`;
 
-          data.forEach(t => {
-            const article = document.createElement('article');
-            article.className = 'result-item';
-            article.setAttribute('aria-label', `老師：${t.name}`);
-
-            const dl = document.createElement('dl');
-
-            const fields = [
-              ['姓名：', t.name],
-              ['教學地區：', t.service_area || '未提供'],
-              ['結訓年份：', t.certification_year || '未提供'],
-              ['結訓證號：', t.certification_number || '未提供'],
-              ['國家證號：', t.license_number || '未提供']
-            ];
-
-            fields.forEach(([label, value]) => {
-              const dt = document.createElement('dt');
-              dt.textContent = label;
-              const dd = document.createElement('dd');
-              dd.textContent = value;
-              dl.appendChild(dt);
-              dl.appendChild(dd);
-            });
-
+          data.forEach((t, i) => {
             const link = document.createElement('a');
             link.href = `/profile/view/${t.id}`;
             link.target = '_blank';
-            link.textContent = '🔍 詳細內容';
-            link.setAttribute('aria-label', `查看 ${t.name} 的詳細資料`);
+            link.textContent = `🔍 查看老師 ${i + 1} 詳細資料`;
+            link.setAttribute('aria-label', `查看老師 ${i + 1} 的詳細資料`);
 
-            article.appendChild(dl);
-            article.appendChild(link);
-            resultsDiv.appendChild(article);
+            const li = document.createElement('li');
+            li.appendChild(link);
+            resultsDiv.appendChild(li);
           });
-
-          // 移動焦點到結果區，幫助 NVDA 読出新內容
-          resultsDiv.focus();
         })
         .catch(() => {
           countDiv.textContent = '搜尋時發生錯誤，請稍後再試。';
