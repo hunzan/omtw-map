@@ -49,6 +49,7 @@
     }
     @media (max-width: 480px) {
       .legend {
+        max-width: 90vw; /* ⬅️ 避免超過螢幕寬度 */
         font-size: 12px;
         padding: 6px 8px;
       }
@@ -87,6 +88,22 @@
         margin: 0 auto;
       }
     }
+
+    .leaflet-popup-content {
+      max-width: 250px;
+      word-wrap: break-word;
+      white-space: normal;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 480px) {
+      .leaflet-popup-content {
+        max-width: 80vw;  /* 手機上最多佔八成寬 */
+        font-size: 13px;
+      }
+    }
+
     .mobile-nav {
       position: fixed;
       bottom: 0;
@@ -154,7 +171,7 @@
 
   <script>
     function showHelp() {
-      alert("🧭 使用說明：\n\n📍 地圖上每個圖標代表一位定向行動老師。\n👤 登入後可新增或更新自己的圖標資訊。\n📝 若不想公開真名，可選擇匿名顯示。\n\n➡ 點選圖標可查看詳情！");
+      alert("🧭 使用說明：\n\n📍 地圖上每個圖標代表一位定向行動老師。\n👤 登入後可新增或更新自己的圖標資訊。\n📝 若不想公開真實姓名，可選擇用暱稱顯示。\n\n➡ 點選圖標可查看老師資料。（內容依老師方便公開程度）");
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -212,12 +229,14 @@
 
             const marker = L.marker([t.lat, t.lng], { icon: customIcon }).addTo(map);
             marker.bindPopup(`
+            <div style="max-width:250px;word-break:break-word;">
               <b>${t.name}</b><br>
               教學地區：${t.service_area}<br>
               結訓年份：${t.certification_year}<br>
               結訓證號：${t.certification_number}<br>
               國家證號：${t.license_number || '（未提供）'}<br>
               <a href="/profile/view/${t.id}" target="_blank">🔍 詳細內容</a>
+            </div>
             `);
           });
 
