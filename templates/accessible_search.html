@@ -1,3 +1,4 @@
+<!-- accessible_search.html - 精簡單頁模式版本 -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -10,7 +11,7 @@
       font-family: "Noto Sans TC", sans-serif;
       padding: 1.5rem;
       line-height: 1.8;
-      background: #f9f9f9;
+      background: #FFF8D7;
       color: #222;
     }
     input[type="text"] {
@@ -28,37 +29,35 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .back-link {
-      display: inline-block;
-      margin-top: 2rem;
-      text-decoration: none;
-      color: #007bff;
-    }
-    ul {
-      padding-left: 1rem;
+    .result-item, .profile-detail {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
-  <h1 role="heading" aria-level="1">🔍 無障礙查找老師</h1>
-
-  <label for="keyword">輸入老師姓名、暱稱或地區：</label>
+  <h1>🔍 無障礙查找老師</h1>
+  <ul>您可輸入老師的姓名，或是輸入地區名稱，按下搜尋按鈕，就能找到有在本平台註冊圖標的老師。</ul>
+  <label for="keyword">輸入老師姓名或地區：</label>
   <input type="text" id="keyword" aria-label="關鍵字搜尋輸入欄位" placeholder="例如：林阿猴、金蕉、台北市" />
   <button onclick="search()">搜尋老師</button>
 
-  <div id="resultCount" aria-live="polite" role="status" aria-atomic="true" style="margin-top: 1rem;"></div>
-  <ul id="results" aria-live="polite" role="region" tabindex="-1"></ul>
+  <div id="resultCount" style="margin-top: 1rem;"></div>
+  <ul id="results"></ul>
 
-  <a class="back-link" href="{{ url_for('map_page') }}">⬅️ 回地圖頁面</a>
+  <h2 id="profileHeading" tabindex="-1" style="margin-top: 2rem;">老師詳細資料</h2>
+  <div id="teacherDetail" class="profile-detail" aria-live="polite" aria-labelledby="profileHeading"></div>
 
   <script>
     function search() {
       const keyword = document.getElementById('keyword').value.trim();
       const resultsDiv = document.getElementById('results');
       const countDiv = document.getElementById('resultCount');
+      const detailDiv = document.getElementById('teacherDetail');
+      detailDiv.innerHTML = '';
 
       if (!keyword) {
         countDiv.textContent = '';
@@ -76,21 +75,38 @@
           }
 
           countDiv.textContent = `共找到 ${data.length} 位老師：`;
-
           data.forEach((t, i) => {
-            const link = document.createElement('a');
-            link.href = `/profile/view/${t.id}`;
-            link.target = '_blank';
-            link.textContent = `🔍 查看老師 ${i + 1} 詳細資料`;
-            link.setAttribute('aria-label', `查看老師 ${i + 1} 的詳細資料`);
-
             const li = document.createElement('li');
-            li.appendChild(link);
+            const btn = document.createElement('button');
+            btn.textContent = `查看老師 ${i + 1} 詳細資料`;
+            btn.setAttribute('aria-label', `查看老師 ${i + 1} 的詳細資料`);
+            btn.onclick = () => loadTeacherDetail(t.id);
+            li.appendChild(btn);
             resultsDiv.appendChild(li);
           });
         })
         .catch(() => {
           countDiv.textContent = '搜尋時發生錯誤，請稍後再試。';
+        });
+    }
+
+    function loadTeacherDetail(id) {
+      const detailDiv = document.getElementById('teacherDetail');
+      fetch(`/api/teacher/${id}`)
+        .then(res => res.json())
+        .then(t => {
+          detailDiv.innerHTML = `
+            <h3>${t.name}</h3>
+            <p><strong>服務地區：</strong>${t.service_area}</p>
+            <p><strong>結訓年份：</strong>${t.certification_year}</p>
+            <p><strong>結訓證號：</strong>${t.certification_number}</p>
+            <p><strong>國家證號：</strong>${t.license_number}</p>
+            <p><strong>簡介：</strong>${t.intro || '（未提供）'}</p>
+          `;
+          document.getElementById('profileHeading').focus();
+        })
+        .catch(() => {
+          detailDiv.innerHTML = '無法載入詳細資料。';
         });
     }
   </script>

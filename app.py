@@ -492,22 +492,21 @@ def search_teacher():
 
     query = TeacherProfile.query.filter(
         or_(
-            func.lower(TeacherProfile.nickname).contains(keyword.lower()),
-            func.lower(TeacherProfile.real_name).contains(keyword.lower()),
-            func.lower(TeacherProfile.service_area).contains(keyword.lower())
+            TeacherProfile.real_name.ilike(f'%{keyword}%'),
+            TeacherProfile.service_area.ilike(f'%{keyword}%')
         )
     ).all()
 
     result = []
     for t in query:
-        if t.real_name_public and t.real_name and t.nickname:
-            display_name = f"{t.real_name}（{t.nickname}）"
-        elif t.real_name_public and t.real_name:
-            display_name = t.real_name
-        elif t.nickname:
-            display_name = t.nickname
+        nickname_clean = (t.nickname or "").strip()
+        if not nickname_clean:
+            nickname_clean = "匿名老師"  # 或其他你希望的預設字串
+
+        if t.real_name_public and t.real_name:
+            display_name = f"{t.real_name}（{nickname_clean}）"
         else:
-            display_name = "未提供"
+            display_name = nickname_clean
 
         result.append({
             "id": t.id,
@@ -515,6 +514,35 @@ def search_teacher():
         })
 
     return jsonify(result)
+
+@app.route('/api/teacher/<int:teacher_id>')
+def get_teacher(teacher_id):
+    profile = TeacherProfile.query.get_or_404(teacher_id)
+
+    # 判斷要顯示的名稱
+    if profile.real_name_public and profile.real_name and profile.nickname:
+        display_name = f"{profile.real_name}（{profile.nickname}）"
+    elif profile.real_name_public and profile.real_name:
+        display_name = profile.real_name
+    elif profile.nickname:
+        display_name = profile.nickname
+    else:
+        display_name = "匿名老師"
+
+    return jsonify({
+        "id": profile.id,
+        "name": display_name,
+        "service_area": profile.service_area or "未提供",
+        "certification_year": profile.certification_year or "未提供",
+        "certification_number": profile.certification_number or "未提供",
+        "license_number": profile.license_number or "未提供",
+        "can_teach_online": profile.can_teach_online,
+        "available_times": profile.available_times or "未提供",
+        "transport_modes": profile.transport_modes or "未提供",
+        "teaching_experience": profile.teaching_experience or "未提供",
+        "lang_skills": profile.lang_skills or "未提供",
+        "intro": profile.intro or "（未提供）"
+    })
 
 if __name__ == "__main__":
     with app.app_context():
