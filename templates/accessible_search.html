@@ -49,8 +49,8 @@
   <ul id="results"></ul>
 
   <h2 id="profileHeading" tabindex="-1" style="margin-top: 2rem;">老師詳細資料</h2>
-  <div id="teacherDetail" class="profile-detail" aria-live="polite" aria-labelledby="profileHeading"></div>
-
+  <div id="teacherDetail" class="profile-detail" aria-live="polite" aria-labelledby="profileHeading"></div><br>
+    <a href="{{ url_for('index') }}"><button type="button">回首頁</button></a>
   <script>
     function search() {
       const keyword = document.getElementById('keyword').value.trim();
