@@ -24,28 +24,28 @@
     <!-- ✅ 是否公開真實姓名 -->
     <label>
       <input type="checkbox" name="real_name_public" {% if profile and profile.real_name_public %}checked{% endif %}>
-      顯示真實姓名（勾選後圖標上會顯示真名）
+      <strong>顯示真實姓名（勾選後圖標上會顯示真名）</strong>
     </label><br><br>
 
-    <label>服務區域：
+    <label><strong>服務區域</strong>（請自由填寫<strong>您能提供服務的地區範圍</strong>，如：高雄市、台北市、台南市、新北市...）：
       <input type="text" name="service_area" required value="{{ profile.service_area if profile else '' }}">
     </label><br><br>
 
-    <label>師培結訓年度（必填）：
+    <label><strong>師培結訓年度（必填）：</strong>
       <input type="number" name="certification_year" required value="{{ profile.certification_year if profile else '' }}">
     </label><br><br>
 
-    <label>結訓證號（必填）：
+    <label><strong>結訓證號（必填）：</strong>
       <input type="text" name="certification_number" required value="{{ profile.certification_number if profile else '' }}">
     </label><br><br>
 
-    <label>國家檢定證號（可選填）：
+    <label><strong>國家檢定證號（可選填）：</strong>
       <input type="text" name="license_number" placeholder="如無可留空" value="{{ profile.license_number if profile else '' }}">
     </label><br><br>
 
     <!-- 📍 地點名稱（這欄不存入 DB，所以無法預填）-->
-    <label>輸入地點名稱（輸入後再按下「查詢座標」即可自動填入經緯度）：
-      <input type="text" id="location-name" placeholder="請輸入您方便標記的公共空間位置，例如：淡水捷運站">
+    <label><strong>📍輸入地點名稱</strong>（請填您的<strong>「實際居住地區」的公共空間</strong>，輸入後再按下「查詢座標」即可自動填入經緯度）：
+      <input type="text" id="location-name" placeholder="請輸入方便標記的公共空間位置，例如：淡水捷運站">
       <button type="button" onclick="searchLocation()">查詢座標</button>
     </label><br><br>
 
@@ -61,7 +61,7 @@
     <!-- ✅ 具備視障生活技能教學資格 -->
     <label>
       <input type="checkbox" name="can_teach_online" {% if profile and profile.can_teach_online %}checked{% endif %}>
-      具備視障生活技能教學資格
+      <strong>具備視障生活技能教學資格</strong>
     </label><br><br>
 
     <!-- 🕒 可上課時間（複選）-->
@@ -84,8 +84,8 @@
     </fieldset><br>
 
     <!-- 📝 自我介紹 -->
-    <label>自我介紹：<br>
-      <textarea name="intro" rows="5" cols="40" placeholder="簡短介紹，包含方便公開的聯絡方式。">{{ profile.intro if profile else '' | e }}</textarea>
+    <label><strong>自我介紹：</strong><br>
+      <textarea name="intro" rows="5" cols="40" placeholder="簡短介紹，包含方便公開的聯絡方式。">{{ (profile.intro if profile else '') | e }}</textarea>
     </label><br><br>
 
     <!-- 👩‍🏫 教學經驗 -->
@@ -109,6 +109,7 @@
       <label><input type="checkbox" name="language_skills" value="english" {% if 'english' in langs %}checked{% endif %}> 英語</label><br>
       <label><input type="checkbox" name="language_skills" value="hakka" {% if 'hakka' in langs %}checked{% endif %}> 客語</label><br>
 
+      {% set langs = profile.lang_skills.split(',') if profile else [] %}
       {% set other_lang = '' %}
       {% for lang in langs %}
         {% if lang.startswith('other:') %}
