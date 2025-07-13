@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
@@ -38,6 +39,11 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"<User {self.email}>"
+
+class PasswordResetRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(45))
+    request_time = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 class TeacherProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)

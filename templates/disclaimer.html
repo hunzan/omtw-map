@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>平台免責聲明｜OMTW Map</title>
+  <title>平台權責聲明｜OMTW Map</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="icon" href="{{ url_for('static', filename='img/omtw.ico') }}" type="image/x-icon">
     <style>
@@ -45,37 +45,50 @@
         max-width: 400px;
         margin: 0.5rem auto;
       }
+      h1, h2, h3 {
+        color: #333366;
+      }
+      ul {
+        padding-left: 1.5em;
+      }
+      li {
+        margin-bottom: 0.5em;
+      }
     </style>
 </head>
 <body>
-  <div class="container">
-    <h1>平台免責聲明</h1>
-    <p>
-      本平台「<strong>台灣定向行動師資地圖</strong>」係由開發者 Lîm A-kâu（林阿猴）與 Kim Chio（金蕉）基於公益目的所設計，<strong>旨在促進定向行動專業師資之資訊交流與合作</strong>。
-    </p>
+  <h1>平台權責聲明</h1>
 
-    <p>
-    <strong>所有在本平台所顯示之資料，皆由使用者自行登錄與提供</strong>，開發者僅提供資訊刊登平台，不擔保內容之完整性、真實性或即時性。
-    </p>
+  <p><strong>《台灣定向行動師資地圖》平台</strong>係以公益為出發點設計建置，旨在促進定向行動專業師資之資訊交流與互惠合作。</p>
 
-    <p>
-      使用者應自行判斷並承擔與平台上任何資料之使用、合作、聯繫或後續行為相關之風險。開發者不對任何使用本平台所引起之直接或間接損害承擔責任。
-    </p>
+  <h2>一、使用權限與內容公開</h2>
+  <ul>
+    <li>未註冊登入者可瀏覽地圖圖標之簡要資訊。</li>
+    <li>註冊並登入者得以點閱各項詳細資料。</li>
+    <li>所有圖標資料由各定向行動老師自行註冊、建置、修改與刪除，平台僅提供技術支援與服務空間。</li>
+  </ul>
 
-    <p>
-        <strong>本平台禁止任何形式之不當行為、資料盜用、商業濫用，違者須自行負責法律後果。</strong>
-    </p>
+  <h2>二、資料使用風險說明</h2>
+  <p>使用者應自行審慎判斷，並承擔任何因瀏覽、聯繫、合作或後續互動所生之風險。</p>
+  <p>本平台不蒐集個人重要資訊，<strong>不會要求使用者提供身份證號、生日、住址等穩私資訊</strong>。</p>
+  <p>本平台不對使用者因本服務所引起之任何直接或間接損害負責，亦不介入平台使用者之間之合作關係。</p>
 
-    <p>
-      若您發現有不實資訊、侵權內容，或有其他使用疑慮，歡迎透過平台聯繫方式告知，我們將儘速處理。
-    </p>
+  <h2>三、使用規範</h2>
+  <p>嚴禁任何形式之不當使用，包括但不限於：</p>
+  <ul>
+    <li>不當言行或騷擾行為</li>
+    <li>個人或機構資料之未經授權使用</li>
+    <li>為商業目的進行之資料蒐集與濫用</li>
+  </ul>
+  <p><strong>違反規範者須自負相關法律責任，平台有權封鎖帳號或採取其他必要處置。</strong></p>
 
-    <p>感謝您的理解與支持，共同守護資訊安全與專業倫理。</p>
+  <h2>四、回報機制</h2>
+  <p>若您發現平台上有任何不實資訊、疑似侵權內容，或其他使用疑慮，歡迎透過聯繫方式與我們回報，我們將儘速處理。</p>
+
+  <h3>感謝您的理解與支持，讓我們一同守護資訊公開、專業倫理與使用安全。</h3>
 
     <p style="margin-top: 2rem; text-align: center;">
       <a href="{{ url_for('index') }}" class="top-register-btn">返回地圖平台首頁</a>
     </p>
-
-  </div>
 </body>
 </html>

@@ -52,7 +52,7 @@
 
   <h1>🔐 會員登入
     <a href="{{ url_for('register') }}" class="top-register-btn" role="button">前往註冊</a>
-    <a href="{{ url_for('verify_code_request') }}" class="top-register-btn" role="button">忘記密碼</a>
+    <a href="{{ url_for('forgot_password') }}" class="top-register-btn" role="button">忘記密碼</a>
   </h1>
 
   {% with messages = get_flashed_messages() %}
@@ -77,9 +77,5 @@
     <button type="submit">登入</button><br><br>
 
   </form>
-
-  <!-- 可刪除或保留原本註冊連結，現在有頂部按鈕了 -->
-  <!-- <p>還沒加入？<a href="{{ url_for('register') }}">前往註冊</a></p> -->
-
 </body>
 </html>

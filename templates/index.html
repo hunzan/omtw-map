@@ -9,31 +9,42 @@
   <style>
     body {
       font-family: sans-serif;
-      text-align: center;
+      text-align: left;
       padding: 2rem;
-    }
-    .logo {
-      margin-bottom: 1rem;
+      line-height: 1.6;
     }
 
+    /* 置中 H1 標題 */
+    h1#welcome-title {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1.8rem;
+    }
+
+    /* 圖示與標題行排版（圖示置左，標題仍可朗讀） */
+    h1#welcome-title img {
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    /* 內文區塊 */
+    .intro, section p {
+      font-size: 1.1rem;
+      text-align: left;
+      margin-bottom: 1.1rem;
+    }
+
+    /* 按鈕樣式 */
     .btn {
-      margin: 1rem;
+      display: inline-block;
       padding: 0.8rem 1.5rem;
       background-color: #007bff;
       color: white;
       border: none;
       border-radius: 6px;
       font-size: 1.1rem;
+      text-align: center;
       text-decoration: none;
-    }
-    .button-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-    }
-
-    .btn {
       flex: 1 1 200px;
       max-width: 300px;
     }
@@ -41,31 +52,55 @@
     .btn:hover {
       background-color: #0056b3;
     }
-    .intro {
+
+    /* 按鈕容器：桌機橫排，手機自動換行 */
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
       margin-top: 2rem;
-      font-size: 1.0rem;
-      line-height: 1.5;
     }
+
+    /* 響應式調整 */
+    @media (max-width: 600px) {
+      .button-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn {
+        width: 100%;
+        max-width: 90%;
+      }
+
   </style>
 </head>
 <body>
 
-  <h1><img src="{{ url_for('static', filename='img/omtw1.png') }}" alt="台灣定向行動師資平台圖示" width="77"> 歡迎來到台灣定向行動師資平台</h1>
+<section aria-labelledby="welcome-title">
+  <h1 id="welcome-title">
+    <img src="{{ url_for('static', filename='img/omtw1.png') }}" alt="台灣定向行動師資平台圖示" width="77">
+    歡迎來到台灣定向行動師資平台
+  </h1>
 
-  <p class="intro">
-    本平台為台灣定向行動老師登錄的免費公益平台，提供老師們<strong>免費登錄圖標及基本可公開資訊</strong>。<br>
-    促進老師們與尋求師資的單位或個人媒合及交流，使用開放地圖標記，每個標記代表一位定向行動老師。<br>
-    <strong>不用註冊登入便能查找圖標，只有要註冊的老師需要註冊登入，並建立自己的圖標</strong>。<br>
-    敬祝使用愉快順心～
-  </p>
+  <div class="intro">
+    <p>本平台為 <strong>免費公益性質的圖資平台</strong>，專為台灣的定向行動老師及需要找老師的單位或個人而設計。旨在協助老師們建置公開圖標，分享自己希望能公開的聯繫資訊，促進專業交流與媒合合作。</p>
+    <p>使用者可透過開放地圖查找各地圖標，<strong>每一個標記代表一位符合法定資格的定向行動老師</strong>。若您只是想概略瀏覽，毋須註冊登入，即可瀏覽地圖簡要資訊。</p>
+    <p>註冊登入者，老師們可建置屬於自己的圖標，需要尋求合適師資的個人或單位可點閱詳細資訊。老師們可管理個人圖標與聯絡資訊，詳細內容請參閱 📝<a href="{{ url_for('disclaimer') }}" class="underline text-blue-600 hover:text-blue-800">平台權責聲明</a>。</p>
+    <p>感謝您的使用，祝您瀏覽愉快、媒合順利。</p>
+  </div>
+</section>
+
     <div class="button-container">
       <a class="btn" href="{{ url_for('accessible_search') }}">無障礙查找頁面</a>
       <a class="btn" href="{{ url_for('map_page') }}">進入師資地圖</a>
       <a class="btn" href="{{ url_for('register') }}">註冊帳號</a>
     </div>
-<p>
-  © 2025 開發者：Lîm A-kâu（林阿猴） & Kim Chio（金蕉）｜
-  <a href="{{ url_for('disclaimer') }}" class="underline text-blue-600 hover:text-blue-800">平台免責聲明</a>
-</p>
+    <footer style="text-align: center; margin-top: 2rem; font-size: 0.9rem; color: #555;">
+      © 2025 開發者：Lîm A-kâu（林阿猴） & Kim Chio（金蕉）｜
+      <a href="{{ url_for('disclaimer') }}" style="text-decoration: underline; color: #007bff;">平台權責聲明</a>
+    </footer>
+
 </body>
 </html>

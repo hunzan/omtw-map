@@ -2,12 +2,13 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, f
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import or_, func
-from models import db, User, TeacherProfile
+from sqlalchemy import or_
+from models import db, User, TeacherProfile, PasswordResetRequest
 from config import Config
 from flask_migrate import Migrate
 from functools import wraps
 from flask_mail import Mail, Message
+from datetime import datetime, timedelta, timezone
 import secrets
 import os
 
@@ -31,6 +32,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+MAX_PER_DAY = 5  # 每日每IP最多發送次數
+
 # ✅ 建立資料表（如果還沒建立的話）
 with app.app_context():
     db.create_all()
@@ -47,94 +50,115 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function   # ✅ 正確回傳裝飾後的函式
 
-@app.route("/verify_code", methods=["GET", "POST"])
-def verify_code_request():
+@app.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
     if request.method == "POST":
         email = request.form.get("email").strip()
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            flash("查無此使用者")
+            flash("若您已註冊，請查看您的信箱")
             return redirect(request.url)
 
-        # 寫入 DB 或暫存在伺服器，等待管理員處理
-        user.pending_reset = True
-        db.session.commit()
+        ip = request.remote_addr
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = today_start + timedelta(days=1)
 
-        # 👉 在這裡通知管理員
-        msg = Message(
-            subject="使用者要求重設密碼",
-            sender=app.config["MAIL_USERNAME"],
-            recipients=[app.config["ADMIN_EMAIL"]],
-            body=f"使用者 {email} 要求重設密碼，請至管理端核發驗證碼"
-        )
-        mail.send(msg)
+        # 計算今天該 IP 發送次數
+        count = PasswordResetRequest.query.filter(
+            PasswordResetRequest.ip_address == ip,
+            PasswordResetRequest.request_time >= today_start,
+            PasswordResetRequest.request_time < today_end
+        ).count()
 
-        flash("已通知管理員，請稍候會與您聯繫")
-        return redirect(url_for("reset_password"))
+        if count >= MAX_PER_DAY:
+            flash("今日發送次數已達上限，請明天再試")
+            return redirect(request.url)
 
-    return render_template("verify_code.html")
+        # 紀錄本次請求
+        req = PasswordResetRequest(ip_address=ip)
+        db.session.add(req)
 
-@app.route("/admin/reset_code", methods=["GET", "POST"])
-@login_required  # 只限管理員
-def admin_reset_code():
-    users = User.query.filter_by(pending_reset=True).all()
-
-    code = secrets.token_hex(3)  # 產生 6 碼的隨機驗證碼，例如 'a3b9c2'
-
-    if request.method == "POST":
-        user_id = request.form.get("user_id")
-        code = secrets.token_hex(3)  # 簡易 6 碼驗證碼
-
-        user = User.query.get(user_id)
+        # 產生並存同一組驗證碼
+        code = secrets.token_hex(3)  # 6碼驗證碼
         user.reset_code = code
-        user.pending_reset = False
+        user.reset_code_expire = datetime.now(timezone.utc) + timedelta(minutes=15)
         db.session.commit()
 
-        # 發送 Email
+        # 發送驗證碼郵件
         msg = Message(
-            subject="重設密碼驗證碼",
+            subject="OMTW 密碼重設驗證碼",
             sender=app.config['MAIL_USERNAME'],
             recipients=[user.email],
-            body=f"您好，您的驗證碼是：{code}。\n請於 15 分鐘內輸入。"
+            body=f"""
+親愛的使用者您好：
+
+您申請了密碼重設，請使用下方驗證碼完成操作：
+
+驗證碼：{code}
+有效時間：15 分鐘
+
+若您未申請此操作，請忽略此信。
+
+── OMTW 師資平台
+"""
         )
         mail.send(msg)
 
-        flash(f"驗證碼產生成功：{code}，請手動傳給使用者")
-        return redirect(request.url)
+        flash("驗證碼已寄出，請至信箱收信")
+        return redirect(url_for("reset_password"))
 
-    return render_template("admin_reset_code.html", users=users)
+    return render_template("forgot_password.html")
 
 @app.route("/contact_admin", methods=["POST"])
 def contact_admin():
     msg = Message(
-        subject="使用者要求協助",
+        subject="使用者無法收驗證碼",
         sender=app.config["MAIL_USERNAME"],
         recipients=[app.config["ADMIN_EMAIL"]],
-        body="有使用者點選了聯絡管理員，請儘速處理。"
+        body="有使用者點選了聯絡管理員協助重設密碼。請查看系統信箱或與使用者聯絡。"
     )
     mail.send(msg)
-    flash("已通知管理員，請稍候他會與你聯繫")
+    flash("已通知管理員，請稍後他會與您聯繫")
     return redirect(url_for("login"))
 
 @app.route("/reset_password", methods=["GET", "POST"])
 def reset_password():
     if request.method == "POST":
-        email = request.form.get("email").strip()
-        code = request.form.get("code").strip()
-        new_pw = request.form.get("new_password").strip()
+        email = request.form.get("email", "").strip()
+        code = request.form.get("code", "").strip()
+        new_pw = request.form.get("new_password", "").strip()
 
-        user = User.query.filter_by(email=email, reset_code=code).first()
+        user = User.query.filter_by(email=email).first()
+        now = datetime.now(timezone.utc)
 
         if not user:
-            flash("驗證碼錯誤或帳號不符")
+            flash("帳號錯誤")
             return redirect(request.url)
 
-        user.set_password(new_pw)  # 假設你有這方法
-        user.reset_code = None  # 清除一次性碼
+        if not user.reset_code or user.reset_code != code:
+            flash("驗證碼錯誤")
+            return redirect(request.url)
+
+        if user.reset_code_expire:
+            if user.reset_code_expire.tzinfo is None:
+                user.reset_code_expire = user.reset_code_expire.replace(tzinfo=timezone.utc)
+
+            if user.reset_code_expire < now:
+                flash("驗證碼已過期，請重新申請")
+                return redirect(url_for("forgot_password"))
+
+        if len(new_pw) < 6:
+            flash("密碼至少需 6 碼")
+            return redirect(request.url)
+
+        # 成功更新密碼
+        user.set_password(new_pw)
+        user.reset_code = None
+        user.reset_code_expire = None
         db.session.commit()
 
-        flash("密碼重設成功，請重新登入")
+        flash("密碼重設成功，請登入")
         return redirect(url_for("login"))
 
     return render_template("reset_password.html")

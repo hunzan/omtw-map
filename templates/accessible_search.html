@@ -39,6 +39,10 @@
   </style>
 </head>
 <body>
+  <script>
+    const isLoggedIn = {{ 'true' if current_user.is_authenticated else 'false' }};
+  </script>
+
   <h1>🔍 無障礙查找老師</h1>
   <ul>您可輸入老師的姓名，或是輸入地區名稱，按下搜尋按鈕，就能找到有在本平台註冊圖標的老師。</ul>
   <label for="keyword">輸入老師姓名或地區：</label>
@@ -92,6 +96,16 @@
 
     function loadTeacherDetail(id) {
       const detailDiv = document.getElementById('teacherDetail');
+      detailDiv.innerHTML = '';  // 清空原本的內容
+
+      if (!isLoggedIn) {
+        detailDiv.innerHTML = `
+          <p style="color:#c00;">🔒 你尚未登入，請先登入才能查看詳細資料。</p>
+          <a href="/login"><button type="button">👉 點我登入</button></a>
+        `;
+        return;
+      }
+
       fetch(`/api/teacher/${id}`)
         .then(res => res.json())
         .then(t => {
@@ -109,6 +123,7 @@
           detailDiv.innerHTML = '無法載入詳細資料。';
         });
     }
+
   </script>
 </body>
 </html>
