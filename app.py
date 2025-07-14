@@ -61,7 +61,7 @@ def forgot_password():
             return redirect(request.url)
 
         ip = request.remote_addr
-        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
         today_end = today_start + timedelta(days=1)
 
         # 計算今天該 IP 發送次數
