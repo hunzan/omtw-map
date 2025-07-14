@@ -88,7 +88,7 @@ def forgot_password():
         # 發送驗證碼郵件
         msg = Message(
             subject="OMTW 密碼重設驗證碼",
-            sender=app.config['MAIL_USERNAME'],
+            sender=("台灣定向行動師資平台", os.getenv("MAIL_DEFAULT_SENDER")),
             recipients=[user.email],
             body=f"""
 親愛的使用者您好：
