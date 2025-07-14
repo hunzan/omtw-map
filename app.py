@@ -175,7 +175,7 @@ def reset_password():
                 return redirect(url_for("forgot_password"))
 
         if len(new_pw) < 6:
-            flash("密碼至少需 6 碼")
+            flash("密碼至少需 6 碼，含英數字")
             return redirect(request.url)
 
         # 成功更新密碼

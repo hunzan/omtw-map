@@ -1,59 +1,112 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>會員登入｜台灣定向行動師資平台</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="icon" href="{{ url_for('static', filename='img/omtw.ico') }}" type="image/x-icon">
-<style>
-  /* 🚀 頂部註冊按鈕樣式 */
-  .top-register-btn {
-    display: inline-block;
-    margin: 1rem 0;
-    padding: 0.5rem 1.2rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    text-decoration: none;
-  }
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
 
-  .top-register-btn:hover {
-    background-color: #0056b3;
-    color: white;
-    text-decoration: none;
-  }
+    h1 {
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
 
-  /* ❗ flash 訊息樣式 */
-  ul.flash-messages {
-    padding-left: 0;
-    list-style: none;
-    text-align: center;
-    margin: 1rem 0;
-  }
+    .top-btn-group {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
 
-  .flash-messages li {
-    color: red;
-    font-weight: bold;
-    background-color: #ffeaea;
-    border: 1px solid #ffaaaa;
-    padding: 0.5rem;
-    border-radius: 5px;
-    max-width: 400px;
-    margin: 0.5rem auto;
-  }
-</style>
+    .top-register-btn {
+      padding: 0.5rem 1.2rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      text-decoration: none;
+      text-align: center;
+      white-space: nowrap;
+    }
 
+    .top-register-btn:hover {
+      background-color: #0056b3;
+      color: white;
+    }
+
+    form {
+      margin-top: 2rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 0.7rem;
+      font-size: 1.1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    ul.flash-messages {
+      list-style: none;
+      padding: 0;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .flash-messages li {
+      color: red;
+      font-weight: bold;
+      background-color: #ffeaea;
+      border: 1px solid #ffaaaa;
+      padding: 0.5rem;
+      border-radius: 5px;
+      max-width: 400px;
+      margin: 0.5rem auto;
+    }
+  </style>
 </head>
 <body>
 
-  <h1>🔐 會員登入
+  <h1>🔐 會員登入</h1>
+
+  <div class="top-btn-group">
     <a href="{{ url_for('register') }}" class="top-register-btn" role="button">前往註冊</a>
     <a href="{{ url_for('forgot_password') }}" class="top-register-btn" role="button">忘記密碼</a>
-  </h1>
+  </div>
 
   {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -66,16 +119,16 @@
   {% endwith %}
 
   <form method="POST" action="{{ url_for('login') }}">
-    <label>Email：<br>
+    <label>Email：
       <input name="email" type="email" placeholder="請輸入 Email" required>
-    </label><br><br>
+    </label>
 
-    <label>密碼：<br>
+    <label>密碼：
       <input name="password" type="password" placeholder="請輸入密碼" required>
-    </label><br><br>
+    </label>
 
-    <button type="submit">登入</button><br><br>
-
+    <button type="submit">登入</button>
   </form>
+
 </body>
 </html>
