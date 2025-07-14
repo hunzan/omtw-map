@@ -147,8 +147,8 @@
   </div>
 
   {% if current_user.is_authenticated and not user_profile %}
-    <div style="position: absolute; bottom: 20px; left: 20px; z-index: 9999; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
-      👋 歡迎加入！你尚未建立圖標，點選「建立圖標」按鈕即可完成。
+    <div style="position: absolute; bottom: 20px; left: 20px; z-index: 9999; background: #fff; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+      👋 歡迎加入！若您是定向行動老師，請點選「建立圖標」以建檔；若是找老師的單位或個人則不用建置圖標喔～
     </div>
   {% endif %}
 
@@ -177,7 +177,7 @@
 
   <script>
     function showHelp() {
-      alert("🧭 使用說明：\n\n📍 地圖上每個圖標代表一位定向行動老師。\n👤 登入後可新增或更新自己的圖標資訊。\n📝 若不想公開真實姓名，可選擇用暱稱顯示。\n 無障礙查找頁面方便視障朋友以文字查找。\n\n➡ 點選圖標可查看老師資料。（內容依老師方便公開程度）");
+      alert("📝 使用說明：\n\n📍 地圖上每個圖標代表一位定向行動老師。\n😀 註冊登入後可新增、修改或刪除自己的圖標資訊。\n🔒 若老師不想公開真實姓名，可選擇用暱稱顯示。\n 🦯無障礙查找頁面方便視障朋友以文字輸入模式搜尋。\n\n➡ 圖標對未註冊登入者僅顯示簡要資訊，註冊登入者方能點閱詳細資訊。");
     }
 
     document.addEventListener("DOMContentLoaded", function () {

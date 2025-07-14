@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>聯絡平台管理員</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/omtw.ico') }}" type="image/x-icon">
+<style>
+  /* 🚀 頂部註冊按鈕樣式 */
+  .top-register-btn {
+    display: inline-block;
+    margin: 1rem 0;
+    padding: 0.5rem 1.2rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+  }
+
+  .top-register-btn:hover {
+    background-color: #0056b3;
+    color: white;
+    text-decoration: none;
+  }
+
+  /* ❗ flash 訊息樣式 */
+  ul.flash-messages {
+    padding-left: 0;
+    list-style: none;
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .flash-messages li {
+    color: red;
+    font-weight: bold;
+    background-color: #ffeaea;
+    border: 1px solid #ffaaaa;
+    padding: 0.5rem;
+    border-radius: 5px;
+    max-width: 400px;
+    margin: 0.5rem auto;
+  }
+</style>
+</head>
+<body>
+  <h1>📩 聯絡平台管理員</h1>
+  <ul>
+    <li>若您遇到登入問題、未收到驗證碼，或發現有使用者濫用平台，請填寫下列表單，平台管理員將協助處理。</li>
+    <li>使用者經證據舉報，確認後，管理員將予以停權處理。</li>
+  </ul>
+  <form method="POST">
+    <label><strong>您的姓名或暱稱：</strong><input type="text" name="sender_name" required></label><br><br>
+    <label><strong>聯絡方式（您的email）：</strong><input type="text" name="contact_info" required></label><br><br>
+    <label><strong>留言內容：</strong><br>
+      <textarea name="message" rows="5" cols="40" placeholder="請簡述您的問題或反映事項，若要舉報平台濫用，請提出具體證明，謝謝。" required></textarea>
+    </label><br><br>
+    <button type="submit">送出聯絡</button>
+  </form>
+
+</body>
+</html>

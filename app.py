@@ -110,17 +110,43 @@ def forgot_password():
 
     return render_template("forgot_password.html")
 
-@app.route("/contact_admin", methods=["POST"])
+@app.route("/contact_admin", methods=["GET", "POST"])
 def contact_admin():
-    msg = Message(
-        subject="使用者無法收驗證碼",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[app.config["ADMIN_EMAIL"]],
-        body="有使用者點選了聯絡管理員協助重設密碼。請查看系統信箱或與使用者聯絡。"
-    )
-    mail.send(msg)
-    flash("已通知管理員，請稍後他會與您聯繫")
-    return redirect(url_for("login"))
+    if request.method == "POST":
+        sender_name = request.form["sender_name"]
+        contact_info = request.form["contact_info"]
+        message = request.form["message"]
+
+        # ✉️ Email 標題與內容
+        subject = f"📬 使用者聯絡管理員：{sender_name}"
+        body = f"""
+        管理員您好，有人透過聯絡表單送出訊息：
+
+        👤 名稱/暱稱：{sender_name}
+        ✉️ 聯絡方式：{contact_info}
+
+        💬 訊息內容：
+        {message}
+
+        請依狀況評估是否需要回應或處理，謝謝！
+        """
+
+        # ✅ 管理員信箱從 .env 讀取
+        admin_email = os.getenv("ADMIN_EMAIL", "admin@example.com")
+
+        # ✅ 寄信出去
+        msg = Message(
+            subject,
+            sender=("台灣定向師資平台", os.getenv("MAIL_USERNAME")),
+            recipients=[admin_email]
+        )
+        msg.body = body
+        mail.send(msg)
+
+        flash("您的訊息已送出，管理員將盡快處理，感謝您！")
+        return redirect(url_for("map_page"))
+
+    return render_template("contact_admin.html")
 
 @app.route("/reset_password", methods=["GET", "POST"])
 def reset_password():
@@ -209,13 +235,7 @@ def login():
             return redirect(url_for("login"))
 
         login_user(user)
-        flash("登入成功")
-
-        # 如果還沒建立圖標，提醒導引去建立
-        profile = TeacherProfile.query.filter_by(user_id=user.id).first()
-        if not profile:
-            flash("請先建立圖標")
-            return redirect(url_for("profile"))  # 或是 profile 建立頁面
+        flash("歡迎登入平台🎉")
 
         return redirect(url_for("map_page"))  # 或是首頁
 
@@ -271,9 +291,50 @@ def register():
             flash("註冊失敗，請稍後再試")
             return redirect(url_for('register'))
 
-        return redirect(url_for("profile"))  # 🔁 註冊完直接跳轉去建立圖標
+        return redirect(url_for("map_page"))  # 🔁 註冊完直接跳轉地圖頁去建立圖標
 
     return render_template("register.html")
+
+@app.route("/contact_teacher/<int:teacher_id>", methods=["GET", "POST"])
+def contact_teacher(teacher_id):
+    teacher = TeacherProfile.query.get_or_404(teacher_id)
+
+    if request.method == "POST":
+        sender_name = request.form["sender_name"]
+        sender_email = request.form["sender_email"]
+        message_body = request.form["message"]
+
+        subject = f"來自 {sender_name} 的聯絡訊息"
+        body = f"""
+        您好，這是一封由平台系統代送的訊息：
+
+        來自：{sender_name}
+        信箱：{sender_email}
+
+        訊息內容：
+        {message_body}
+
+        （請直接回信至此信箱與對方聯絡，謝謝）
+        """
+
+        # ✅ 根據 teacher 裡的 user_id 找帳號
+        teacher_user = User.query.get(teacher.user_id)
+        if not teacher_user or not teacher_user.email:
+            flash("找不到該老師帳號或信箱，請稍後再試")
+            return redirect(url_for("map_page"))
+
+        msg = Message(
+            subject,
+            sender=("台灣定向師資平台", os.getenv("MAIL_USERNAME")),
+            recipients=[teacher_user.email]
+        )
+        msg.body = body
+        mail.send(msg)
+
+        flash("訊息已成功送出！")
+        return redirect(url_for("map_page"))
+
+    return render_template("contact_teacher.html", teacher_id=teacher_id)
 
 @app.route("/logout")
 @login_required
@@ -477,6 +538,8 @@ def api_teachers():
         print("❌ /api/teachers 發生錯誤：", str(e))
         return jsonify({"error": "伺服器錯誤，請稍後再試"}), 500
 
+from flask_login import current_user
+
 @app.route("/profile/view/<int:profile_id>")
 def view_profile(profile_id):
     profile = TeacherProfile.query.get_or_404(profile_id)
@@ -490,7 +553,19 @@ def view_profile(profile_id):
     else:
         display_name = profile.nickname or "匿名老師"
 
-    return render_template("view_profile.html", profile=profile, user=user, display_name=display_name)
+    # ✅ 判斷是否顯示聯絡按鈕（登入者非此老師）
+    show_contact_button = (
+        current_user.is_authenticated and
+        current_user.id != user.id
+    )
+
+    return render_template(
+        "view_profile.html",
+        profile=profile,
+        user=user,
+        display_name=display_name,
+        show_contact_button=show_contact_button
+    )
 
 @app.route('/map')
 def map_page():

@@ -57,7 +57,7 @@
     </style>
 </head>
 <body>
-  <h1>平台權責聲明</h1>
+  <h1>🚨 平台權責聲明</h1>
 
   <p><strong>《台灣定向行動師資地圖》平台</strong>係以公益為出發點設計建置，旨在促進定向行動專業師資之資訊交流與互惠合作。</p>
 
@@ -66,6 +66,7 @@
     <li>未註冊登入者可瀏覽地圖圖標之簡要資訊。</li>
     <li>註冊並登入者得以點閱各項詳細資料。</li>
     <li>所有圖標資料由各定向行動老師自行註冊、建置、修改與刪除，平台僅提供技術支援與服務空間。</li>
+    <li>透過本平台尋找老師的單位或個人，或老師們之間的合作交流，請務必相互尊重，避免無畏爭議。</li>
   </ul>
 
   <h2>二、資料使用風險說明</h2>
@@ -74,18 +75,37 @@
   <p>本平台不對使用者因本服務所引起之任何直接或間接損害負責，亦不介入平台使用者之間之合作關係。</p>
 
   <h2>三、使用規範</h2>
-  <p>嚴禁任何形式之不當使用，包括但不限於：</p>
+  <p>🚫 嚴禁任何形式之不當使用，包括但不限於：</p>
   <ul>
     <li>不當言行或騷擾行為</li>
     <li>個人或機構資料之未經授權使用</li>
     <li>為商業目的進行之資料蒐集與濫用</li>
   </ul>
-  <p><strong>違反規範者須自負相關法律責任，平台有權封鎖帳號或採取其他必要處置。</strong></p>
+  <p><strong>違反規範者須自負相關法律責任，平台有權停用帳號或採取其他必要處置。</strong></p>
 
   <h2>四、回報機制</h2>
-  <p>若您發現平台上有任何不實資訊、疑似侵權內容，或其他使用疑慮，歡迎透過聯繫方式與我們回報，我們將儘速處理。</p>
+  <p>若您發現平台上有任何不實資訊、疑似侵權內容，或其他使用疑慮，歡迎透過聯繫方式舉證回報，我們將儘速處理。
+  <a href="{{ url_for('contact_admin') }}" style="text-decoration: underline; color: #007bff;">聯絡管理員</a>
+  </p>
+  <div style="text-align: center; margin-top: 2rem;">
+    <a href="https://165.npa.gov.tw/#/" target="_blank" rel="noopener noreferrer" style="
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    " onmouseover="this.style.backgroundColor='#c82333'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.25)'" onmouseout="this.style.backgroundColor='#dc3545'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.15)'">
+      🔎 防詐騙 165 專區
+    </a>
+  </div>
 
-  <h3>感謝您的理解與支持，讓我們一同守護資訊公開、專業倫理與使用安全。</h3>
+  <h2>感謝您的理解與支持，讓我們一同守護資訊公開、專業倫理與使用安全。</h2>
 
     <p style="margin-top: 2rem; text-align: center;">
       <a href="{{ url_for('index') }}" class="top-register-btn">返回地圖平台首頁</a>

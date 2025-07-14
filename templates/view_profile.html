@@ -114,6 +114,16 @@
     </p>
     <p><strong>簡介：</strong>{{ profile.intro | replace('\n', '<br>') | safe }}</p>
 
+      {% if show_contact_button %}
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="{{ url_for('contact_teacher', teacher_id=user.id) }}"
+           class="btn-contact"
+           aria-label="聯絡這位老師">
+          📩 聯絡老師
+        </a>
+      </div>
+    {% endif %}
+
     <!-- 將按鈕改成「關閉視窗」 -->
     <div class="modal-footer">
       <button class="btn-back" onclick="window.close()">關閉視窗</button>

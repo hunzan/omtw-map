@@ -85,7 +85,7 @@
 
     <!-- 📝 自我介紹 -->
     <label><strong>自我介紹：</strong><br>
-      <textarea name="intro" rows="5" cols="40" placeholder="簡短介紹，包含方便公開的聯絡方式，請留意資訊安全，避免透露重要個資。">{{ (profile.intro if profile else '') | e }}</textarea>
+      <textarea name="intro" rows="5" cols="40" placeholder="簡短介紹您自己，若您要在此留下公開聯絡方式，請留意資訊安全，避免透露重要個資。">{{ (profile.intro if profile else '') | e }}</textarea>
     </label><br><br>
 
     <!-- 👩‍🏫 教學經驗 -->
@@ -125,7 +125,7 @@
 
     <label>
       <input type="checkbox" name="agree_terms" required {% if profile and profile.agree_terms %}checked{% endif %}>
-      本人確認所填資料皆屬實，若有不實或偽造，將自行負法律責任，並與本平台無關。
+      <strong>本人確認所填資料皆屬實，以期能與合作單位或對象取得良好信任關係，若有不實或偽造，將自行承擔法律責任，及失去信用之可能。</strong>
     </label><br><br>
 
     <button type="submit">放置圖標</button><br><br>

@@ -1,0 +1,41 @@
+<!-- contact_teacher.html -->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>聯絡老師</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/omtw.ico') }}" type="image/x-icon">
+</head>
+<body>
+  <h1>聯絡老師</h1>
+  <p>請填寫以下表單，您的訊息將透過系統寄給該老師，<strong>老師的 Email 不會公開顯示</strong>。</p>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flash-messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('contact_teacher', teacher_id=teacher_id) }}">
+    <label>您的姓名／單位：
+      <input type="text" name="sender_name" required>
+    </label><br><br>
+
+    <label>您的聯絡信箱：
+      <input type="email" name="sender_email" required>
+    </label><br><br>
+
+    <label>您給老師的訊息：<br>
+      <textarea name="message" rows="6" cols="50" required></textarea>
+    </label><br><br>
+
+    <button type="submit">送出訊息</button>
+  </form>
+</body>
+</html>
