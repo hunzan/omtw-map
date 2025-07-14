@@ -116,10 +116,10 @@
 
       {% if show_contact_button %}
       <div style="text-align: center; margin-top: 2rem;">
-        <a href="{{ url_for('contact_teacher', teacher_id=user.id) }}"
+        <a href="{{ url_for('contact_teacher', teacher_id=profile.id) }}"
            class="btn-contact"
            aria-label="聯絡這位老師">
-          📩 聯絡老師
+           📩 聯絡老師
         </a>
       </div>
     {% endif %}
