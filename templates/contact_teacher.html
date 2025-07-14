@@ -7,11 +7,37 @@
   <title>聯絡老師</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="icon" href="{{ url_for('static', filename='img/omtw.ico') }}" type="image/x-icon">
+    <style>
+      .notice-text {
+      list-style: none;
+      padding: 0;
+      margin: 1.5rem auto;
+      max-width: 90%;
+      text-align: center;
+      font-size: 1.05rem;
+      color: #333;
+    }
+
+    .notice-text li {
+      line-height: 1.6;
+    }
+
+    /* 手機版額外調整（可選） */
+    @media (max-width: 600px) {
+      .notice-text {
+        font-size: 1rem;
+        max-width: 95%;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+    </style>
 </head>
 <body>
   <h1>聯絡老師</h1>
-  <p>請填寫以下表單，您的訊息將透過系統寄給該老師，<strong>老師的 Email 不會公開顯示</strong>。</p>
-
+  <ul class="notice-text">
+    <li>請填寫以下表單，您的訊息將透過系統寄給該老師，<strong>老師的 Email 不會公開顯示</strong>。</li>
+  </ul>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       <ul class="flash-messages">
@@ -23,15 +49,15 @@
   {% endwith %}
 
   <form method="POST" action="{{ url_for('contact_teacher', teacher_id=teacher_id) }}">
-    <label>您的姓名／單位：
+    <label><strong>您的姓名／單位：</strong>
       <input type="text" name="sender_name" required>
     </label><br><br>
 
-    <label>您的聯絡信箱：
+    <label><strong>您的聯絡信箱：</strong>
       <input type="email" name="sender_email" required>
     </label><br><br>
 
-    <label>您給老師的訊息：<br>
+    <label><strong>您給老師的訊息：</strong><br>
       <textarea name="message" rows="6" cols="50" required></textarea>
     </label><br><br>
 
