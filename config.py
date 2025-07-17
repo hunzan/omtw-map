@@ -20,7 +20,7 @@ class Config:
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")         # 寄件 Gmail 帳號
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")         # Gmail 應用程式密碼
-    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")   # 預設寄件人，等於寄件帳號
+    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_USERNAME")   # 預設寄件人，等於寄件帳號
 
     # ✅ 管理員信箱（可用於通知或報錯提醒）
     ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@example.com")

@@ -61,7 +61,7 @@ def forgot_password():
             return redirect(request.url)
 
         ip = request.remote_addr
-        today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         today_end = today_start + timedelta(days=1)
 
         # 計算今天該 IP 發送次數
@@ -88,7 +88,7 @@ def forgot_password():
         # 發送驗證碼郵件
         msg = Message(
             subject="OMTW 密碼重設驗證碼",
-            sender=("台灣定向行動師資平台", os.getenv("MAIL_DEFAULT_SENDER")),
+            sender=app.config['MAIL_USERNAME'],
             recipients=[user.email],
             body=f"""
 親愛的使用者您好：
@@ -175,7 +175,7 @@ def reset_password():
                 return redirect(url_for("forgot_password"))
 
         if len(new_pw) < 6:
-            flash("密碼至少需 6 碼，含英數字")
+            flash("密碼至少需 6 碼")
             return redirect(request.url)
 
         # 成功更新密碼
@@ -235,7 +235,13 @@ def login():
             return redirect(url_for("login"))
 
         login_user(user)
-        flash("歡迎登入平台🎉")
+        flash("登入成功")
+
+        # 如果還沒建立圖標，提醒導引去建立
+        profile = TeacherProfile.query.filter_by(user_id=user.id).first()
+        if not profile:
+            flash("請先建立圖標")
+            return redirect(url_for("profile"))  # 或是 profile 建立頁面
 
         return redirect(url_for("map_page"))  # 或是首頁
 
@@ -291,7 +297,7 @@ def register():
             flash("註冊失敗，請稍後再試")
             return redirect(url_for('register'))
 
-        return redirect(url_for("map_page"))  # 🔁 註冊完直接跳轉地圖頁去建立圖標
+        return redirect(url_for("profile"))  # 🔁 註冊完直接跳轉去建立圖標
 
     return render_template("register.html")
 
@@ -538,8 +544,6 @@ def api_teachers():
         print("❌ /api/teachers 發生錯誤：", str(e))
         return jsonify({"error": "伺服器錯誤，請稍後再試"}), 500
 
-from flask_login import current_user
-
 @app.route("/profile/view/<int:profile_id>")
 def view_profile(profile_id):
     profile = TeacherProfile.query.get_or_404(profile_id)
@@ -566,7 +570,6 @@ def view_profile(profile_id):
         display_name=display_name,
         show_contact_button=show_contact_button
     )
-
 @app.route('/map')
 def map_page():
     if current_user.is_authenticated:
@@ -647,5 +650,3 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-
-
