@@ -237,13 +237,7 @@ def login():
         login_user(user)
         flash("登入成功")
 
-        # 如果還沒建立圖標，提醒導引去建立
-        profile = TeacherProfile.query.filter_by(user_id=user.id).first()
-        if not profile:
-            flash("請先建立圖標")
-            return redirect(url_for("profile"))  # 或是 profile 建立頁面
-
-        return redirect(url_for("map_page"))  # 或是首頁
+        return redirect(url_for("map_page"))
 
     return render_template("login.html")
 
